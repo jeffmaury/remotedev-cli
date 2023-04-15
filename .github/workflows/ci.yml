@@ -27,6 +27,8 @@ jobs:
       - name: Build with Maven
         run: mvn -B -ntp package -Pnative --file pom.xml
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -B -ntp
+        run: |
+          mvn deploy -B -ntp
+          mvn deploy -B -ntp -Dfile=target/remotedev-*-runner* -Dclassifier=linux-amd64
         env:
           GITHUB_TOKEN: ${{ github.token }}
