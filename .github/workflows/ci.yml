@@ -29,6 +29,6 @@ jobs:
       - name: Publish to GitHub Packages Apache Maven
         run: |
           mvn deploy -B -ntp
-          mvn deploy -B -ntp -Dfile=target/remotedev-*-runner* -Dclassifier=linux-amd64
+          mvn deploy:deploy-file -B -ntp -Dfile=target/remotedev-*-runner* -Dclassifier=linux-amd64
         env:
           GITHUB_TOKEN: ${{ github.token }}
