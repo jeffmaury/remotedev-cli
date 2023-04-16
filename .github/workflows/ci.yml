@@ -23,8 +23,14 @@ jobs:
           components: 'native-image'
           cache: 'maven'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: s4u/maven-settings-action@v2.8.0
-      - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -B -ntp -Pnative
+      - name: Build
+        run: mvn package -B -ntp -Pnative
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - uses: ncipollo/release-action@v1
+        with:
+          name: latest
+          allowUpdates: true
+          prerelease: true
+          artifacts: target/*runner*
+
