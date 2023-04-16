@@ -160,7 +160,7 @@
                     <artifact>
                       <file>${project.build.directory}/${project.artifactId}-${project.version}-runner${binarysuffix}</file>
                       <classifier>${os.detected.classifier}</classifier>
-                      <type></type>
+                      <type>bin</type>
                     </artifact>
                   </artifacts>
                 </configuration>
