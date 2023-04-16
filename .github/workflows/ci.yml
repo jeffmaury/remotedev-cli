@@ -30,6 +30,8 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           name: latest
+          tag: latest
+          commit: main
           allowUpdates: true
           prerelease: true
           artifacts: target/*runner*
