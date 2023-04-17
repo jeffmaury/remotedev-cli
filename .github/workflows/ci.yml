@@ -35,5 +35,5 @@ jobs:
           allowUpdates: true
           prerelease: true
           artifacts: target/*runner*
-          token: ${{secrets.GH_TOKEN}}
+          token: ${{secrets.GITHUB_TOKEN}}
 
