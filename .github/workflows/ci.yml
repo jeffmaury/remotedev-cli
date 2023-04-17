@@ -34,5 +34,4 @@ jobs:
           commit: main
           allowUpdates: true
           prerelease: true
-          artifacts: target/*runner*
 
