@@ -1,0 +1,64 @@
+# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  prepare:
+    runs-on: ubuntu-20.04
+    outputs:
+      projectVersion: ${{ steps.get-version.outputs.projectVersion}}
+      upload_url: ${{ steps.create_release.outputs.upload_url}}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get project version
+        id: get-version
+        run: echo "projectVersion=`cat pom.xml | grep '<version>' | head -1 | sed -e 's#.*<version>\(.\+\)</version>.*#\1#'`" >> $GITHUB_OUTPUT
+      - uses: ncipollo/release-action@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: latest
+          tag: latest
+          commit: main
+          allowUpdates: true
+          prerelease: true
+          removeArtifacts: true
+
+  build:
+    needs: prepare
+    strategy:
+      matrix:
+        include:
+          - os: windows-2022
+            ossuffix: .exe
+          - os: ubuntu-20.04
+          - os: macos-11
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: '11'
+          components: 'native-image'
+          cache: 'maven'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: mvn package -B -ntp -Pnative
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.prepare.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: target/remotedev-cli-${{ needs.prepare.outputs.projectVersion }}-runner${{ matrix.ossuffix}}
+          asset_name: remotedev-cli-${{ runner.os }}${{ matrix.ossuffix }}
+          asset_content_type: application/octet-stream
+

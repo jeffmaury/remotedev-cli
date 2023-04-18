@@ -23,7 +23,7 @@ public class RemoteCommand implements Runnable {
     @Parameters(paramLabel = "<service port>", description = "The remote service port to bind.")
     int remotePort;
 
-    @Parameters(paramLabel = "<localPort>", defaultValue = "-1", description = "The local port to bind the service to.", )
+    @Parameters(paramLabel = "<localPort>", defaultValue = "-1", description = "The local port to bind the service to.")
     int localPort;
 
     @Override
@@ -41,6 +41,7 @@ public class RemoteCommand implements Runnable {
         try {
             service.start().get();
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
