@@ -50,6 +50,7 @@ jobs:
           commit: main
           allowUpdates: true
           prerelease: true
+          removeArtifacts: true
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
