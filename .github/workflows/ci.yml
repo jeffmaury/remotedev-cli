@@ -7,7 +7,18 @@ on:
   push:
 
 jobs:
+  prepare:
+    runs-on: ubuntu-20.04
+    outputs:
+      projectVersion: ${{ steps.get-version.outputs.projectVersion}}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get project version
+        id: get-version
+        run: echo "projectVersion=`cat pom.xml | grep '<version>' | head -1 | sed -e 's#.*<version>\(.\+\)</version>.*#\1#'`" >> $GITHUB_OUTPUT
+
   build:
+    needs: prepare
     strategy:
       matrix:
         include:
@@ -39,15 +50,12 @@ jobs:
           commit: main
           allowUpdates: true
           prerelease: true
-      - name: Get project version
-        id: get-version
-        run: echo "PROJECT_VERSION=`cat pom.xml | grep '<version>' | head -1 | sed -e 's#.*<version>\(.\+\)</version>.*#\1#'`" >> $GITHUB_OUTPUT
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: target/remotedev-cli-${{ steps.get-version.outputs.PROJECT_VERSION }}-runner${{ matrix.ossuffix}}
+          asset_path: target/remotedev-cli-${{ needs.prepare.outputs.projectVersion }}-runner${{ matrix.ossuffix}}
           asset_name: remotedev-cli-${{ runner.os }}${{ matrix.ossuffix }}
           asset_content_type: application/octet-stream
 
