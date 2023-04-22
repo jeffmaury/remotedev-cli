@@ -4,6 +4,6 @@ import io.quarkus.picocli.runtime.annotations.TopCommand;
 import picocli.CommandLine.Command;
 
 @TopCommand
-@Command(mixinStandardHelpOptions = true, subcommands = { LocalCommand.class, RemoteCommand.class })
+@Command(mixinStandardHelpOptions = true, subcommands = { LocalCommand.class, RemoteCommand.class, ListCommand.class })
 public class MainCommand {
 }
